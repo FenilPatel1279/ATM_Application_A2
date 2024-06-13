@@ -136,7 +136,7 @@ namespace ATMApplication
                 bool exitAccount = false;
                 while (!exitAccount)
                 {
-                    Console.WriteLine($"\nAccount Menu for {account.AccountHolderName}:");
+                    Console.WriteLine($"Account Menu for {account.AccountHolderName}:");
                     Console.WriteLine("1. Check the Balance");
                     Console.WriteLine("2. Deposit a money");
                     Console.WriteLine("3. Withdraw a money");
