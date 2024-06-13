@@ -1,0 +1,191 @@
+using System;
+using System.Collections.Generic;
+
+namespace ATMApplication
+{
+    class ATM_Application_A2  // Main class of the ATM.
+    {
+        public class Account  // represents bank account of customer.
+        {
+            public int AccountNumber { get; private set; }
+            public string AccountHolderName { get; private set; }
+            public decimal Balance { get; private set; }
+            public decimal AnnualInterestRate { get; private set; }
+            private List<string> transactions;
+
+            public Account(int accountNumber, string accountHolderName, decimal initialBalance, decimal annualInterestRate)
+            {
+                AccountNumber = accountNumber;
+                AccountHolderName = accountHolderName;
+                Balance = initialBalance;
+                AnnualInterestRate = annualInterestRate;
+                transactions = new List<string>();
+                RecordTransaction("Account created with balance " + initialBalance);
+            }
+
+            public void Deposit(decimal amount)  // Method of deposit money in customers bank Account.
+            {
+                Balance += amount;
+                RecordTransaction("Deposited " + amount);
+            }
+
+            public bool Withdraw(decimal amount)   // Method of withdraw money from customers bank Account.
+            {
+                if (amount <= Balance)
+                {
+                    Balance -= amount;
+                    RecordTransaction("Withdrew " + amount);
+                    return true;
+                }
+                return false;
+            }
+
+            public void DisplayTransactions()      // Display the current transaction done by the user.
+            {
+                Console.WriteLine("Transactions:");
+                foreach (var transaction in transactions)
+                {
+                    Console.WriteLine(transaction);
+                }
+            }
+
+            private void RecordTransaction(string transaction)
+            {
+                transactions.Add(transaction);
+            }
+        }
+
+        public class Bank     // Represents a bank with multiple Account.
+        {
+            private List<Account> accounts;
+
+            public Bank()
+            {
+                accounts = new List<Account>();
+                for (int i = 0; i < 10; i++)
+                {
+                    accounts.Add(new Account(100 + i, "Default Account", 100, 0.05m));
+                }
+            }
+
+            public void AddAccount(Account account)
+            {
+                accounts.Add(account);
+            }
+
+            public Account RetrieveAccount(int accountNumber)
+            {
+                return accounts.Find(account => account.AccountNumber == accountNumber);
+            }
+        }
+
+        static void Main()     // main method to run ATM Application 
+        {
+            Bank bank = new Bank();
+            bool exit = false;
+
+            while (!exit)
+            {
+                Console.WriteLine("ATM Main Menu:");
+                Console.WriteLine("1. Create a New Account");
+                Console.WriteLine("2. Select a Account");
+                Console.WriteLine("3. Exit ");
+                Console.Write("Choose an option: ");
+                string option = Console.ReadLine();
+
+                switch (option)
+                {
+                    case "1":
+                        CreateAccount(bank);
+                        break;
+                    case "2":
+                        SelectAccount(bank);
+                        break;
+                    case "3":
+                        exit = true;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option. Try again.");
+                        break;
+                }
+            }
+        }
+
+        static void CreateAccount(Bank bank)     // Method to create a new account of user.
+        {
+            Console.Write("Enter the account number: ");
+            int accountNumber = int.Parse(Console.ReadLine());
+            Console.Write("Enter the account holder name: ");
+            string accountHolderName = Console.ReadLine();
+            Console.Write("Enter the initial balance: ");
+            decimal initialBalance = decimal.Parse(Console.ReadLine());
+            Console.Write("Enter annual interest rate : ");
+            decimal annualInterestRate = decimal.Parse(Console.ReadLine());
+            bank.AddAccount(new Account(accountNumber, accountHolderName, initialBalance, annualInterestRate));
+            Console.WriteLine("Account created successfully.");
+        }
+
+        static void SelectAccount(Bank bank)   // Method to select and manage existing Account.
+        {
+            Console.Write("Enter account number: ");
+            int accountNumber = int.Parse(Console.ReadLine());
+            Account account = bank.RetrieveAccount(accountNumber);
+
+            if (account != null)
+            {
+                bool exitAccount = false;
+                while (!exitAccount)
+                {
+                    Console.WriteLine($"\nAccount Menu for {account.AccountHolderName}:");
+                    Console.WriteLine("1. Check the Balance");
+                    Console.WriteLine("2. Deposit a money");
+                    Console.WriteLine("3. Withdraw a money");
+                    Console.WriteLine("4. Display all Transactions");
+                    Console.WriteLine("5. Exit from Account");
+                    Console.Write("Choose an option: ");
+                    string option = Console.ReadLine();
+
+                    switch (option)
+                    {
+                        case "1":
+                            Console.WriteLine($"Account Holder: {account.AccountHolderName}");
+                            Console.WriteLine("Balance: " + account.Balance);
+                            break;
+                        case "2":
+                            Console.Write($"Account Holder: {account.AccountHolderName}Enter amount to deposit: ");
+                            decimal depositAmount = decimal.Parse(Console.ReadLine());
+                            account.Deposit(depositAmount);
+                            Console.WriteLine("Deposit successful.");
+                            break;
+                        case "3":
+                            Console.Write($"Account Holder: {account.AccountHolderName}Enter amount to withdraw: ");
+                            decimal withdrawAmount = decimal.Parse(Console.ReadLine());
+                            if (account.Withdraw(withdrawAmount))
+                            {
+                                Console.WriteLine("Withdrawal successful.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Insufficient funds.");
+                            }
+                            break;
+                        case "4":
+                            Console.WriteLine($"Account Holder: {account.AccountHolderName}");
+                            account.DisplayTransactions();
+                            break;
+                        case "5":
+                            exitAccount = true;
+                            break;
+                        default:
+                            Console.WriteLine("Invalid option. Try again.");
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Account not found.");
+            }
+        }
+    }
+}
