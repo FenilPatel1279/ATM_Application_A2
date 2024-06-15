@@ -113,14 +113,28 @@ namespace ATMApplication
 
         static void CreateAccount(Bank bank)     // Method to create a new account of user.
         {
-            Console.Write("Enter the account number: ");
+            Console.Write("Enter the account number (must be greater than 100): ");
             int accountNumber = int.Parse(Console.ReadLine());
+            if (accountNumber <= 100)
+            {
+                Console.WriteLine("Invalid account number. It must be greater than 100.");
+                return;
+            }
+
             Console.Write("Enter the account holder name: ");
             string accountHolderName = Console.ReadLine();
+
             Console.Write("Enter the initial balance: ");
             decimal initialBalance = decimal.Parse(Console.ReadLine());
-            Console.Write("Enter annual interest rate : ");
+
+            Console.Write("Enter annual interest rate (must be less than 3%): ");
             decimal annualInterestRate = decimal.Parse(Console.ReadLine());
+            if (annualInterestRate >= 3)
+            {
+                Console.WriteLine("Invalid annual interest rate. It must be less than 3%.");
+                return;
+            }
+
             bank.AddAccount(new Account(accountNumber, accountHolderName, initialBalance, annualInterestRate));
             Console.WriteLine("Account created successfully.");
         }
@@ -152,13 +166,13 @@ namespace ATMApplication
                             Console.WriteLine("Balance: " + account.Balance);
                             break;
                         case "2":
-                            Console.Write($"Account Holder: {account.AccountHolderName}Enter amount to deposit: ");
+                            Console.Write($"Enter amount to deposit: ");
                             decimal depositAmount = decimal.Parse(Console.ReadLine());
                             account.Deposit(depositAmount);
                             Console.WriteLine("Deposit successful.");
                             break;
                         case "3":
-                            Console.Write($"Account Holder: {account.AccountHolderName}Enter amount to withdraw: ");
+                            Console.Write($"Enter amount to withdraw: ");
                             decimal withdrawAmount = decimal.Parse(Console.ReadLine());
                             if (account.Withdraw(withdrawAmount))
                             {
@@ -170,7 +184,6 @@ namespace ATMApplication
                             }
                             break;
                         case "4":
-                            Console.WriteLine($"Account Holder: {account.AccountHolderName}");
                             account.DisplayTransactions();
                             break;
                         case "5":
